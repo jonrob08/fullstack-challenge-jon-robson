@@ -43,11 +43,12 @@ class OpenWeatherMapService extends AbstractWeatherService
 
             return $this->transformResponse($data);
         } catch (\Exception $e) {
-            Log::error('OpenWeatherMap API error', [
-                'error' => $e->getMessage(),
-                'latitude' => $latitude,
-                'longitude' => $longitude
-            ]);
+            // TODO: Fix storage permissions in Docker
+            // Log::error('OpenWeatherMap API error', [
+            //     'error' => $e->getMessage(),
+            //     'latitude' => $latitude,
+            //     'longitude' => $longitude
+            // ]);
 
             throw new \Exception('Weather service unavailable: ' . $e->getMessage());
         }
