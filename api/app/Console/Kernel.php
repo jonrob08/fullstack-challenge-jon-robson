@@ -15,7 +15,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Warm weather cache every 30 minutes to ensure fast response times
+        $schedule->command('weather:warm-cache')->everyThirtyMinutes();
+        
+        // TODO: Consider adding real-time updates via WebSockets
+        // This would push weather updates to connected clients
     }
 
     /**
