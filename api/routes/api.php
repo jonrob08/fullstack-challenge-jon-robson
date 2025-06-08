@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WeatherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +18,31 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return response()->json([
-        'message' => 'all systems are a go',
-        'users' => \App\Models\User::all(),
+        'name' => 'Weather API',
+        'version' => '1.0',
+        'endpoints' => [
+            'users' => [
+                'list' => 'GET /api/users',
+                'show' => 'GET /api/users/{id}',
+                'update' => 'PUT /api/users/{id}',
+                'delete' => 'DELETE /api/users/{id}',
+            ],
+            'weather' => [
+                'user_weather' => 'GET /api/users/{id}/weather',
+                'refresh_user_weather' => 'POST /api/users/{id}/weather/refresh',
+                'all_users_weather' => 'GET /api/weather',
+            ],
+        ],
     ]);
 });
+
+// User routes
+Route::apiResource('users', UserController::class)->except(['store']);
+
+// Weather routes
+Route::prefix('users/{user}/weather')->group(function () {
+    Route::get('/', [WeatherController::class, 'show']);
+    Route::post('/refresh', [WeatherController::class, 'refresh']);
+});
+
+Route::get('/weather', [WeatherController::class, 'index']);
