@@ -2,25 +2,28 @@
   <div class="container mx-auto px-4 py-8">
     <div class="flex items-center justify-between mb-8">
       <div>
-        <h1 class="text-3xl font-bold text-gray-800">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
           Client Weather Monitoring
         </h1>
-        <p class="text-gray-600 mt-1">
+        <p class="text-gray-600 dark:text-gray-400 mt-1">
           Track weather conditions across all client locations
         </p>
       </div>
       <div class="text-right">
-        <p class="text-sm text-gray-600">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
           {{ usersStore.users.length }} clients
         </p>
         <button
           v-if="!loadingAllWeather && !allWeatherLoaded"
           @click="loadAllWeather"
-          class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+          class="mt-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors shadow-sm"
         >
           Load All Weather Data
         </button>
-        <div v-if="loadingAllWeather" class="mt-2 text-sm text-gray-600">
+        <div
+          v-if="loadingAllWeather"
+          class="mt-2 text-sm text-gray-600 dark:text-gray-400"
+        >
           Loading: {{ weatherLoadProgress }}/{{ usersStore.users.length }}
         </div>
       </div>
@@ -32,14 +35,14 @@
       class="flex justify-center items-center py-12"
     >
       <div
-        class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"
+        class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-blue-600 dark:border-t-blue-400"
       ></div>
     </div>
 
     <!-- Error State -->
     <div
       v-else-if="usersStore.error"
-      class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"
+      class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg"
     >
       <p class="font-medium">Error loading clients</p>
       <p class="text-sm">{{ usersStore.error }}</p>
@@ -66,7 +69,7 @@
 
     <!-- Empty State -->
     <div v-else class="text-center py-12">
-      <p class="text-gray-500 text-lg">No clients found</p>
+      <p class="text-gray-500 dark:text-gray-400 text-lg">No clients found</p>
     </div>
 
     <!-- Weather Modal -->

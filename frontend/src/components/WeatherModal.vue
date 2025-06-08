@@ -1,24 +1,28 @@
 <template>
   <Teleport to="body">
     <div
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      class="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center p-4 z-50"
       @click="$emit('close')"
     >
       <div
         @click.stop
-        class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slide-up"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slide-up border border-gray-200 dark:border-gray-700"
       >
         <!-- Header -->
         <div
-          class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between"
+          class="sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-6 py-4 flex items-center justify-between"
         >
           <div>
-            <h2 class="text-xl font-semibold text-gray-800">{{ user.name }}</h2>
-            <p class="text-sm text-gray-600">{{ user.email }}</p>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+              {{ user.name }}
+            </h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {{ user.email }}
+            </p>
           </div>
           <button
             @click="$emit('close')"
-            class="text-gray-400 hover:text-gray-600 transition-colors"
+            class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <svg
               class="w-6 h-6"
@@ -41,14 +45,14 @@
           <!-- Loading State -->
           <div v-if="isLoading" class="flex justify-center py-12">
             <div
-              class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"
+              class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-600 border-t-blue-600 dark:border-t-blue-400"
             ></div>
           </div>
 
           <!-- Error State -->
           <div
             v-else-if="error"
-            class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"
+            class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg"
           >
             <p class="font-medium">Error loading weather</p>
             <p class="text-sm">{{ error }}</p>
@@ -64,7 +68,7 @@
           <div v-else-if="weather" class="space-y-6">
             <!-- Current Weather -->
             <div
-              class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6"
+              class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-6"
             >
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
@@ -74,13 +78,15 @@
                     class="w-24 h-24"
                   />
                   <div>
-                    <p class="text-4xl font-bold text-gray-800">
+                    <p class="text-4xl font-bold text-gray-800 dark:text-white">
                       {{ Math.round(weather.current.temperature) }}°C
                     </p>
-                    <p class="text-lg text-gray-600 capitalize">
+                    <p
+                      class="text-lg text-gray-600 dark:text-gray-300 capitalize"
+                    >
                       {{ weather.current.description }}
                     </p>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       Feels like {{ Math.round(weather.current.feels_like) }}°C
                     </p>
                   </div>
@@ -88,7 +94,7 @@
                 <button
                   @click="refreshWeather"
                   :disabled="isLoading"
-                  class="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg shadow transition-colors disabled:opacity-50"
+                  class="bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg shadow transition-colors disabled:opacity-50"
                 >
                   Refresh
                 </button>
@@ -131,11 +137,13 @@
             </div>
 
             <!-- Location -->
-            <div class="border-t pt-4">
-              <h3 class="text-sm font-medium text-gray-700 mb-2">
+            <div class="border-t dark:border-gray-700 pt-4">
+              <h3
+                class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Client Location
               </h3>
-              <p class="text-sm text-gray-600">
+              <p class="text-sm text-gray-600 dark:text-gray-400">
                 {{
                   formatLocation(
                     user.location.latitude,
@@ -146,7 +154,7 @@
             </div>
 
             <!-- Cache Info -->
-            <div class="text-xs text-gray-500 text-center">
+            <div class="text-xs text-gray-500 dark:text-gray-500 text-center">
               <p>Last updated: {{ formatDateTime(weather.cached_at) }}</p>
               <p v-if="weather.response_time_ms">
                 Response time: {{ weather.response_time_ms.toFixed(0) }}ms
@@ -156,10 +164,12 @@
 
           <!-- No Data State -->
           <div v-else class="text-center py-12">
-            <p class="text-gray-500 mb-4">No weather data available</p>
+            <p class="text-gray-500 dark:text-gray-400 mb-4">
+              No weather data available
+            </p>
             <button
               @click="fetchWeather"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors shadow-sm"
             >
               Load Weather
             </button>
