@@ -17,13 +17,13 @@ class QueuePerformanceTest extends TestCase
 
     /**
      * Test queue job performance with 50 users (respecting API rate limits)
-     * 
+     *
      * This test measures:
      * - Total execution time
      * - Average time per user
      * - Success/failure rates
      * - Memory usage
-     * 
+     *
      * Note: Limited to 50 users to stay within 60 requests/minute API limit
      */
     public function test_queue_job_performs_well_with_50_users()
@@ -63,7 +63,7 @@ class QueuePerformanceTest extends TestCase
             'latitude' => fake()->latitude(-60, 70),
             'longitude' => fake()->longitude(-180, 180),
         ]);
-        
+
         $userCount = User::whereNotNull('latitude')->whereNotNull('longitude')->count();
         $this->assertEquals(50, $userCount, 'Should have exactly 50 users with locations');
 
@@ -87,19 +87,19 @@ class QueuePerformanceTest extends TestCase
         $avgTimePerUser = $executionTime / 50;
 
         // Assert performance requirements (adjusted for 50 users)
-        $this->assertLessThan(5000, $executionTime, 
+        $this->assertLessThan(5000, $executionTime,
             "Total execution time {$executionTime}ms exceeds 5 second limit for 50 users");
-        
+
         $this->assertLessThan(100, $avgTimePerUser,
             "Average time per user {$avgTimePerUser}ms exceeds 100ms threshold");
-        
+
         $this->assertLessThan(64, $memoryUsed,
             "Memory usage {$memoryUsed}MB exceeds 64MB limit");
 
         // Verify completion log was called
         Log::shouldHaveReceived('info')
             ->with('Batch weather fetch completed', \Mockery::on(function ($context) {
-                return is_array($context) 
+                return is_array($context)
                     && isset($context['total_users'])
                     && $context['total_users'] === 50;
             }))
@@ -150,7 +150,7 @@ class QueuePerformanceTest extends TestCase
         });
 
         $job = new FetchWeatherForAllUsers();
-        
+
         // Run the job - it should handle failures gracefully
         try {
             $job->handle(
@@ -194,17 +194,26 @@ class QueuePerformanceTest extends TestCase
         ]);
 
         DB::enableQueryLog();
-        
+
         $repository = app(\App\Repositories\UserRepository::class);
         $users = $repository->getUsersWithLocation();
-        
+
         $queries = DB::getQueryLog();
-        
+
         // Should only execute 1 query to fetch all users
         $this->assertCount(1, $queries, 'User fetching should be done in a single query');
-        
+
         // Query should use proper conditions
-        $this->assertStringContainsString('where `latitude` is not null', $queries[0]['query']);
-        $this->assertStringContainsString('and `longitude` is not null', $queries[0]['query']);
+        $query = strtolower($queries[0]['query']);
+        $this->assertTrue(
+            str_contains($query, 'where `latitude` is not null') ||
+            str_contains($query, 'where "latitude" is not null'),
+            'Query should filter by latitude'
+        );
+        $this->assertTrue(
+            str_contains($query, 'and `longitude` is not null') ||
+            str_contains($query, 'and "longitude" is not null'),
+            'Query should filter by longitude'
+        );
     }
 }

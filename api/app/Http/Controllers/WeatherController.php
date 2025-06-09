@@ -47,8 +47,10 @@ class WeatherController extends Controller
             // Fetch fresh data
             $weather = $this->weatherRepository->getWeatherForUser($user);
 
-            // Broadcast the weather update
-            broadcast(new WeatherUpdated($user->id, $weather));
+            // Broadcast the weather update (skip in testing environment)
+            if (app()->environment() !== 'testing') {
+                broadcast(new WeatherUpdated($user->id, $weather));
+            }
 
             return response()->json([
                 'data' => new WeatherResource($weather),

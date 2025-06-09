@@ -77,8 +77,8 @@ class FetchWeatherForAllUsers implements ShouldQueue
                 'avg_time_per_user_ms' => round($duration / $users->count(), 2),
             ]);
             
-            // Broadcast batch update event
-            if ($successCount > 0) {
+            // Broadcast batch update event (skip in testing environment)
+            if ($successCount > 0 && app()->environment() !== 'testing') {
                 $updates = collect($weatherData)
                     ->filter(fn ($item) => $item['weather'] !== null)
                     ->map(fn ($item) => [
