@@ -1,5 +1,8 @@
 <template>
   <div class="container mx-auto px-4 py-8">
+    <!-- Live Updates Control -->
+    <LiveUpdatesControl />
+
     <div class="flex items-center justify-between mb-8">
       <div>
         <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
@@ -126,6 +129,7 @@ import { useUsersStore } from "@/stores/users";
 import { useWeatherStore } from "@/stores/weather";
 import UserCard from "./UserCard.vue";
 import WeatherModal from "./WeatherModal.vue";
+import LiveUpdatesControl from "./LiveUpdatesControl.vue";
 import type { User } from "@/types/user";
 
 const usersStore = useUsersStore();
@@ -169,7 +173,7 @@ const loadAllWeather = async () => {
   loadingAllWeather.value = true;
   weatherLoadProgress.value = 0;
 
-  const batchSize = 5; // Process 5 at a time to avoid rate limits
+  const batchSize = 10; // Process 10 at a time to avoid rate limits
   const users = usersStore.users;
 
   for (let i = 0; i < users.length; i += batchSize) {

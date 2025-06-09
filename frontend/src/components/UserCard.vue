@@ -1,7 +1,7 @@
 <template>
   <div
     @click="$emit('click')"
-    class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg dark:shadow-gray-900/50 transition-all duration-200 cursor-pointer p-6 border border-gray-200 dark:border-gray-700"
+    class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg dark:shadow-gray-900/50 transition-all duration-200 cursor-pointer p-6 border border-gray-200 dark:border-gray-700 relative"
   >
     <!-- User Info -->
     <div class="mb-4">
@@ -104,13 +104,18 @@
         </button>
       </div>
     </div>
+
+    <!-- Real-time update indicator -->
+    <RealtimeIndicator :last-update="lastRealtimeUpdate" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import type { User } from "@/types/user";
 import { useWeatherStore } from "@/stores/weather";
+import { useWebSocketStore } from "@/stores/websocket";
+import RealtimeIndicator from "./RealtimeIndicator.vue";
 
 const props = defineProps<{
   user: User;
@@ -121,12 +126,25 @@ defineEmits<{
 }>();
 
 const weatherStore = useWeatherStore();
+const websocketStore = useWebSocketStore();
 
 const weather = computed(
   () => props.user.weather || weatherStore.getWeatherForUser(props.user.id)
 );
 const isLoading = computed(() => weatherStore.isLoadingForUser(props.user.id));
 const error = computed(() => weatherStore.getErrorForUser(props.user.id));
+
+const lastRealtimeUpdate = ref<Date | null>(null);
+
+// Watch for weather updates via WebSocket
+watch(
+  () => weatherStore.getWeatherForUser(props.user.id),
+  (newWeather, oldWeather) => {
+    if (newWeather && oldWeather && newWeather.cached_at !== oldWeather.cached_at) {
+      lastRealtimeUpdate.value = new Date();
+    }
+  }
+);
 
 const fetchWeather = async () => {
   try {
