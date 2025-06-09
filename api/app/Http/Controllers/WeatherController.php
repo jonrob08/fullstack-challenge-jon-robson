@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\WeatherUpdated;
 use App\Http\Resources\WeatherResource;
 use App\Models\User;
 use App\Repositories\WeatherRepository;
@@ -45,6 +46,9 @@ class WeatherController extends Controller
 
             // Fetch fresh data
             $weather = $this->weatherRepository->getWeatherForUser($user);
+
+            // Broadcast the weather update
+            broadcast(new WeatherUpdated($user->id, $weather));
 
             return response()->json([
                 'data' => new WeatherResource($weather),
