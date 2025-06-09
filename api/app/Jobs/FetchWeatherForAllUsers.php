@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\WeatherBatchUpdated;
 use App\Repositories\UserRepository;
 use App\Repositories\WeatherRepository;
 use Illuminate\Bus\Queueable;
@@ -75,6 +76,20 @@ class FetchWeatherForAllUsers implements ShouldQueue
                 'duration_ms' => $duration,
                 'avg_time_per_user_ms' => round($duration / $users->count(), 2),
             ]);
+            
+            // Broadcast batch update event
+            if ($successCount > 0) {
+                $updates = collect($weatherData)
+                    ->filter(fn ($item) => $item['weather'] !== null)
+                    ->map(fn ($item) => [
+                        'userId' => $item['user']->id,
+                        'weather' => $item['weather'],
+                    ])
+                    ->values()
+                    ->toArray();
+                    
+                broadcast(new WeatherBatchUpdated($updates));
+            }
             
             // Log any failures for monitoring
             if ($failureCount > 0) {

@@ -181,9 +181,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import type { User } from "@/types/user";
 import { useWeatherStore } from "@/stores/weather";
+import { useWebSocketStore } from "@/stores/websocket";
 import WeatherDetailCard from "./WeatherDetailCard.vue";
 
 const props = defineProps<{
@@ -230,10 +231,20 @@ const formatDateTime = (timestamp: string): string => {
   return new Date(timestamp).toLocaleString();
 };
 
+const websocketStore = useWebSocketStore();
+
 onMounted(() => {
+  // Subscribe to weather updates for this user
+  websocketStore.subscribeToUserWeather(props.user.id);
+  
   // Fetch weather if not already loaded
   if (!weather.value && !isLoading.value) {
     fetchWeather();
   }
+});
+
+onUnmounted(() => {
+  // Unsubscribe from weather updates when modal closes
+  websocketStore.unsubscribeFromUserWeather(props.user.id);
 });
 </script>

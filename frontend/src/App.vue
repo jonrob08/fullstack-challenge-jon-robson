@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import ThemeToggle from "@/components/ThemeToggle.vue";
+import { useWebSocketStore } from "@/stores/websocket";
+
+// Initialize WebSocket store
+const websocketStore = useWebSocketStore();
 </script>
 
 <template>
