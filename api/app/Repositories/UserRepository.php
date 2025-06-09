@@ -15,7 +15,7 @@ class UserRepository
     public function getAllWithLocations(): Collection
     {
         return User::select('id', 'name', 'email', 'latitude', 'longitude')
-            ->orderBy('name')
+            ->orderBy('id')
             ->get();
     }
 
@@ -33,7 +33,7 @@ class UserRepository
     public function paginate(int $perPage = 20)
     {
         return User::select('id', 'name', 'email', 'latitude', 'longitude')
-            ->orderBy('name')
+            ->orderBy('id')
             ->paginate($perPage);
     }
 
@@ -66,7 +66,7 @@ class UserRepository
             $query->whereNull('latitude')->orWhereNull('longitude');
         }
 
-        return $query->orderBy('name')->paginate($perPage);
+        return $query->orderBy('id')->paginate($perPage);
     }
 
     /**

@@ -26,24 +26,26 @@ abstract class AbstractWeatherService implements WeatherServiceInterface
                 $responseTime = (microtime(true) - $startTime) * 1000;
 
                 // Log response time for monitoring
-                Log::info('Weather API response time', [
-                    'service' => static::class,
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
-                    'response_time_ms' => $responseTime
-                ]);
+                // TODO: Fix storage permissions in Docker
+                // Log::info('Weather API response time', [
+                //     'service' => static::class,
+                //     'latitude' => $latitude,
+                //     'longitude' => $longitude,
+                //     'response_time_ms' => $responseTime
+                // ]);
 
                 return array_merge($weather, [
                     'cached_at' => now()->toIso8601String(),
                     'response_time_ms' => $responseTime
                 ]);
             } catch (\Exception $e) {
-                Log::error('Weather API error', [
-                    'service' => static::class,
-                    'error' => $e->getMessage(),
-                    'latitude' => $latitude,
-                    'longitude' => $longitude
-                ]);
+                // TODO: Fix storage permissions in Docker
+                // Log::error('Weather API error', [
+                //     'service' => static::class,
+                //     'error' => $e->getMessage(),
+                //     'latitude' => $latitude,
+                //     'longitude' => $longitude
+                // ]);
 
                 throw $e;
             }
