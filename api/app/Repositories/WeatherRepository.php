@@ -51,10 +51,10 @@ class WeatherRepository
     /**
      * Get cache key for a user's weather data
      */
-    protected function getCacheKey(int $userId): string
+    protected function getCacheKey(float $latitude, float $longitude): string
     {
         $prefix = config('weather.cache.prefix', 'weather');
-        return "{$prefix}.user.{$userId}";
+        return sprintf('%s:%s:%s', $prefix, round($latitude, 4), round($longitude, 4));
     }
 
     /**
@@ -62,7 +62,7 @@ class WeatherRepository
      */
     public function clearCacheForUser(User $user): void
     {
-        $cacheKey = $this->getCacheKey($user->id);
+        $cacheKey = $this->getCacheKey($user->latitude, $user->longitude);
 
         if (config('weather.cache.enabled')) {
             Cache::forget($cacheKey);

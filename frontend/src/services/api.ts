@@ -24,8 +24,13 @@ class ApiClient {
     );
   }
 
-  async getUsers(): Promise<ApiResponse<User[]>> {
-    return this.client.get("/users");
+  async getUsers(
+    page: number = 1,
+    perPage: number = 20
+  ): Promise<ApiResponse<User[]>> {
+    return this.client.get("/users", {
+      params: { page, per_page: perPage },
+    });
   }
 
   async getUser(id: number): Promise<ApiResponse<User>> {
